@@ -80,12 +80,19 @@ ShortName=CNjustPGs
 ```
 **中文名要转化成 UTF16LEBOM 编码才不会有乱码**
 
+### 关闭服务器接管（否则有密码也会被人自动匹配到接管）
+`vim /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFEngine.ini`
+```
+[Engine.GameEngine]
+bUsedForTakeover=FALSE
+```
+
 ### 运行
-因为 LinuxServer-KFGame.ini 转化成 UTF16LEBOM 每次运行会恢复初识设置
+如果将 LinuxServer-KFGame.ini 转化成 UTF16LEBOM 每次运行会恢复默认设置，每次运行前手动
 ```
 cp -rf ~/ssconfig/LinuxServer-KFGame.ini /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFGame.ini
 ```
-运行
+后台运行
 ```
 nohup /home/root/games/killingfloor/Binaries/Win64/KFGameSteamServer.bin.x86_64 KF-TragicKingdom?adminpassword=123?Difficulty=2?GameLength=1?Mutator=KFMutator.KFMutator_MaxPlayersV2?MaxPlayers=12 &
 ```
@@ -105,3 +112,6 @@ docker run -it --rm --name=kf2 -p 7777:7777/udp -p 27015:27015/udp -p 20560:2056
 
 ### 配置
 就跟上面手动安装一样
+
+### 更新
+`docker restart kf2`
