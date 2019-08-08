@@ -106,12 +106,62 @@ ps -aux|grep killingfloor
 
 ### 安装、运行
 ```
-docker run -it --rm --name=kf2 -p 7777:7777/udp -p 27015:27015/udp -p 20560:20560/udp -p 8080:8080 -v /etc/hosts:/etc/hosts -v /home/root/games/killingfloor:/srv/kf2server hmbsbige/kf2server
+docker run -it --rm --name=kf2 \
+-p 7777:7777/udp \
+-p 27015:27015/udp \
+-p 20560:20560/udp \
+-p 8080:8080 \
+-v /etc/hosts:/etc/hosts \
+-v /home/root/games/killingfloor:/srv/kf2server \
+hmbsbige/kf2server
 ```
 **将 `/home/root/games/killingfloor` 修改成自己服务器的目录**
 
 ### 配置
-就跟上面手动安装一样
+#### 开启Web
+`crudini --set /home/root/games/killingfloor/KFGame/Config/KFWeb.ini IpDrv.WebServer bEnabled true`
+
+#### 创意工坊订阅
+`crudini --set /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFEngine.ini OnlineSubsystemSteamworks.KFWorkshopSteamworks ServerSubscribedWorkshopItems 675314991`
+
+#### 修改 TickRate
+```
+crudini --set /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFEngine.ini IpDrv.TcpNetDriver NetServerMaxTickRate 60
+
+crudini --set /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFEngine.ini IpDrv.TcpNetDriver LanServerMaxTickRate 60
+
+crudini --set /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFEngine.ini IpDrv.TcpNetDriver MaxClientRate 64000
+
+crudini --set /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFEngine.ini IpDrv.TcpNetDriver MaxInternetClientRate 64000
+```
+
+#### 服务器信息
+
+##### 修改信息
+```
+crudini --set /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFGame.ini Engine.AccessControl AdminPassword 123
+crudini --set /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFGame.ini Engine.AccessControl GamePassword lajigugu
+
+crudini --set /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFGame.ini KFGame.KFGameInfo ServerMOTD 反正玩游戏就对了
+crudini --set /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFGame.ini KFGame.KFGameInfo BannerLink http://pic-1.bigecdn.cn/KF2Server.png
+crudini --set /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFGame.ini KFGame.KFGameInfo WebsiteLink https://jq.qq.com/?_wv=1027&k=5cMkpGg
+crudini --set /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFGame.ini KFGame.KFGameInfo ClanMotto
+
+crudini --set /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFGame.ini Engine.GameReplicationInfo ServerName [CHN]反正玩游戏就对了
+crudini --set /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFGame.ini Engine.GameReplicationInfo ShortName CNjustPGs
+```
+
+##### 转换编码 UTF16LEBOM
+```
+iconv -f utf8 -t UTF-16LE /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFGame.ini > /home/root/games/killingfloor/KFGame/Config/temp.ini
+sed -i '1s/^\(\xff\xfe\)\?/\xff\xfe/' /home/root/games/killingfloor/KFGame/Config/temp.ini
+mv /home/root/games/killingfloor/KFGame/Config/temp.ini /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFGame.ini
+```
+
+#### 关闭服务器接管（否则有密码也会被人自动匹配到接管）
+```
+crudini --set /home/root/games/killingfloor/KFGame/Config/LinuxServer-KFEngine.ini Engine.GameEngine bUsedForTakeover FALSE
+```
 
 ### 更新
 `docker restart kf2`
